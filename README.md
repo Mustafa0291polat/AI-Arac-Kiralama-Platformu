@@ -1,1 +1,1 @@
-# AI-Ara-Kiralama-Platformu
+# AI-Arac-Kiralama-Platformu
