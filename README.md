@@ -1,0 +1,1 @@
+# AI-Ara-Kiralama-Platformu
