@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Araç Kiralama - Kayıt Ol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-96">
+        <h2 class="text-2xl font-bold mb-6 text-blue-600 text-center">Platforma Kayıt Ol</h2>
+        
+        <div id="messageBox" class="hidden mb-4 p-3 rounded-lg text-center text-sm font-semibold"></div>
+
+        <form id="registerForm">
+            <div class="mb-4">
+                <label class="block text-gray-700">Kullanıcı Adı</label>
+                <input type="text" id="username" class="w-full px-3 py-2 border rounded-lg" placeholder="mustafa_polat" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">E-posta</label>
+                <input type="email" id="email" class="w-full px-3 py-2 border rounded-lg" placeholder="mustafa3polat@gmail.com" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Şifre</label>
+                <input type="password" id="password" class="w-full px-3 py-2 border rounded-lg" placeholder="••••••••" required>
+            </div>
+            <div class="flex gap-4 mb-4">
+                <div class="w-1/2">
+                    <label class="block text-gray-700">Yaş</label>
+                    <input type="number" id="age" class="w-full px-3 py-2 border rounded-lg" placeholder="21" required>
+                </div>
+                <div class="w-1/2">
+                    <label class="block text-gray-700">Üyelik Tipi</label>
+                    <select class="w-full px-3 py-2 border rounded-lg">
+                        <option>Kiracı</option>
+                        <option>Araç Sahibi</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200">Kayıt Ol</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Sayfanın yenilenmesini engelle
+
+            // İnputlardaki verileri al
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const age = document.getElementById('age').value;
+            const messageBox = document.getElementById('messageBox');
+
+            try {
+                // Python FastAPI Sunucusuna Veriyi Gönder
+                const response = await fetch("http://127.0.0.1:8000/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password,
+                        age: parseInt(age)
+                    })
+                });
+
+                const data = await response.json();
+                messageBox.classList.remove('hidden');
+
+                if (response.ok) {
+                    // Kayıt Başarılıysa Yeşil Kutu Göster
+                    messageBox.className = "mb-4 p-3 rounded-lg text-center font-semibold bg-green-100 text-green-700";
+                    messageBox.innerText = "Kayıt Başarılı! Hoş geldin, " + data.username;
+                    document.getElementById('registerForm').reset(); // Formu temizle
+                } else {
+                    // Backend'den hata gelirse (Ör: yaş < 18, boşluk var) Kırmızı Kutu Göster
+                    messageBox.className = "mb-4 p-3 rounded-lg text-center font-semibold bg-red-100 text-red-700";
+                    
+                    // FastAPI'nin gönderdiği detaylı hata mesajını ayıkla
+                    let errorMsg = "Bir hata oluştu.";
+                    if (typeof data.detail === 'string') {
+                        errorMsg = data.detail; // Kullanıcı adı alınmış hatası
+                    } else if (Array.isArray(data.detail)) {
+                        errorMsg = data.detail[0].msg; // Yaş veya boşluk hatası (Pydantic)
+                    }
+                    messageBox.innerText = errorMsg;
+                }
+            } catch (error) {
+                // Sunucu kapalıysa
+                messageBox.classList.remove('hidden');
+                messageBox.className = "mb-4 p-3 rounded-lg text-center font-semibold bg-red-100 text-red-700";
+                messageBox.innerText = "Sunucuya bağlanılamadı. Backend çalışıyor mu?";
+            }
+        });
+    </script>
+</body>
+</html>
