@@ -10,10 +10,10 @@ Base = declarative_base()
 from backend.database import SessionLocal, engine
 from backend import models
 
-# Tabloyu sıfırdan oluşturuyoruz
+
 models.Base.metadata.create_all(bind=engine)
 
-# Eksik sütunları SQLite'a dinamik ekleme koruması
+
 with engine.connect() as connection:
     result = connection.execute(text("PRAGMA table_info(cars)"))
     existing_columns = {row[1] for row in result}
@@ -34,9 +34,7 @@ with engine.connect() as connection:
     if "monthly_price" not in existing_columns:
         connection.execute(text("ALTER TABLE cars ADD COLUMN monthly_price INTEGER"))
 
-# Birden fazla fotoğrafa sahip Türkiye şartlarına uygun örnek veri seti
-# Birden fazla fotoğrafa sahip Türkiye şartlarına uygun GERÇEKÇİ örnek veri seti
-# Birden fazla fotoğrafa sahip Türkiye şartlarına uygun GERÇEKÇİ örnek veri seti
+
 sample_cars = [
     {
         "owner_username": "serkan", "brand": "Fiat", "model": "Egea", "city": "İstanbul", "district": "Bakırköy",
@@ -52,7 +50,7 @@ sample_cars = [
         "price": 780, "weekly_price": 4680, "monthly_price": 15500, "year": 2020, "fuel_type": "Benzinli",
         "transmission": "Otomatik", "km": 62000, "body_type": "Hatchback 5 kapı", "power_range": "76 - 100 HP", "engine_size": "1300 cm3' e kadar",
         "drive_type": "Önden Çekiş", "color": "Beyaz", "warranty": "Hayır", "heavy_damage": "Hayır", "seller_type": "Sahibinden",
-        # UZANTILAR PNG OLARAK DÜZELTİLDİ
+       
         "image_url": "/static/images/clio1.png",
         "image_urls": "/static/images/clio1.png|/static/images/clio2.png|/static/images/clio3.png",
         "phone_number": "0532 222 33 44", "available": "Kiralık", "description": "Renault Clio otomatik vites, az yakar, parkı kolaydır."
@@ -62,7 +60,7 @@ sample_cars = [
         "price": 1100, "weekly_price": 6600, "monthly_price": 22000, "year": 2022, "fuel_type": "Dizel",
         "transmission": "Otomatik", "km": 36000, "body_type": "Sedan", "power_range": "101 - 125 HP", "engine_size": "1301 - 1600 cm3",
         "drive_type": "Önden Çekiş", "color": "Beyaz", "warranty": "Evet", "heavy_damage": "Hayır", "seller_type": "Kurumdan",
-        # UZANTILAR PNG OLARAK DÜZELTİLDİ
+       
         "image_url": "/static/images/megane1.png",
         "image_urls": "/static/images/megane1.png|/static/images/megane2.png|/static/images/megane3.png",
         "phone_number": "0532 333 44 55", "available": "Kiralık", "description": "Konforlu aile aracı Renault Megane. Geniş bagaj hacmi."
@@ -72,7 +70,7 @@ sample_cars = [
         "price": 1300, "weekly_price": 7800, "monthly_price": 25000, "year": 2021, "fuel_type": "Dizel",
         "transmission": "Manuel", "km": 42000, "body_type": "SUV", "power_range": "101 - 125 HP", "engine_size": "1301 - 1600 cm3",
         "drive_type": "4WD (Sürekli)", "color": "Beyaz", "warranty": "Hayır", "heavy_damage": "Hayır", "seller_type": "Sahibinden",
-        # UZANTILAR PNG OLARAK DÜZELTİLDİ
+        
         "image_url": "/static/images/dacia1.png",
         "image_urls": "/static/images/dacia1.png|/static/images/dacia2.png|/static/images/dacia3.png",
         "phone_number": "0532 444 55 66", "available": "Kiralık", "description": "Dacia Duster SUV, dağ yolları ve kamp rotaları için uygun."
@@ -82,7 +80,7 @@ sample_cars = [
         "price": 950, "weekly_price": 5700, "monthly_price": 19000, "year": 2021, "fuel_type": "Benzinli",
         "transmission": "Otomatik", "km": 45000, "body_type": "Hatchback 5 kapı", "power_range": "76 - 100 HP", "engine_size": "1300 cm3' e kadar",
         "drive_type": "Önden Çekiş", "color": "Beyaz", "warranty": "Hayır", "heavy_damage": "Hayır", "seller_type": "Sahibinden",
-        # UZANTILAR PNG OLARAK DÜZELTİLDİ
+       
         "image_url": "/static/images/polo1.png",
         "image_urls": "/static/images/polo1.png|/static/images/polo2.png|/static/images/polo3.png",
         "phone_number": "0533 999 88 77", "available": "Kiralık", "description": "Volkswagen Polo DSG şanzıman. Alman konforu."
@@ -92,7 +90,7 @@ sample_cars = [
         "price": 1050, "weekly_price": 6300, "monthly_price": 20000, "year": 2020, "fuel_type": "Hibrit",
         "transmission": "Otomatik", "km": 48000, "body_type": "Sedan", "power_range": "101 - 125 HP", "engine_size": "1601 - 1800 cm3",
         "drive_type": "Önden Çekiş", "color": "Beyaz", "warranty": "Hayır", "heavy_damage": "Hayır", "seller_type": "Sahibinden",
-        # UZANTILAR PNG OLARAK DÜZELTİLDİ
+        
         "image_url": "/static/images/toyota1.png",
         "image_urls": "/static/images/toyota1.png|/static/images/toyota2.png|/static/images/toyota3.png",
         "phone_number": "0532 777 88 99", "available": "Kiralık", "description": "Toyota Corolla Hibrit. Şehir içinde çok az yakar ve sessizdir."
@@ -102,11 +100,11 @@ sample_cars = [
 if __name__ == '__main__':
     db = SessionLocal()
     try:
-        db.query(models.Car).delete() # Eski hatalı verileri temizle
+        db.query(models.Car).delete() 
         db.commit()
 
         for car_data in sample_cars:
-            db.add(models.Car(**car_data)) # Yeni çoklu fotoğraflı verileri yükle
+            db.add(models.Car(**car_data)) 
 
         db.commit()
         print('Çoklu fotoğrafa sahip yeni araçlar başarıyla veritabanına eklendi!')

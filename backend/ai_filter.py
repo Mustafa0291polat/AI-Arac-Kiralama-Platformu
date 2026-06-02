@@ -10,7 +10,7 @@ client = None
 if API_KEY:
     client = OpenAI(api_key=API_KEY)
 
-# Senin Kurallarına Göre Sabitlenen Listeler
+
 FUEL_TYPES = ["Benzinli", "Benzin & LPG", "Dizel", "Hibrit", "Elektrikli"]
 TRANSMISSION_TYPES = ["Manuel", "Otomatik"]
 BODY_TYPES = ["Cabrio", "Coupe", "Coupe 4 kapı", "Hatchback 3 kapı", "Hatchback 5 kapı", "Sedan", "Station Wagon", "MPV", "Roadster"]
@@ -19,7 +19,7 @@ ENGINE_SIZES = ["1300 cm3' e kadar", "1301 - 1600 cm3", "1601 - 1800 cm3", "1801
 DRIVE_TYPES = ["Önden Çekiş", "Arkadan İtiş", "4WD (Sürekli)", "AWD (Elektronik)"]
 COLORS = ["Bej", "Beyaz", "Bordo", "Füme", "Gri", "Gümüş Gri", "Kahverengi", "Kırmızı", "Lacivert", "Mavi", "Mor", "Pembe", "Sarı", "Siyah", "Şampanya", "Turkuaz", "Turuncu", "Yeşil"]
 
-# Main.py hata vermesin diye eski değişkeni boş liste olarak tutuyoruz
+
 OFFROAD_TERMS = [] 
 
 DEFAULT_FILTER = {
@@ -44,7 +44,7 @@ DEFAULT_FILTER = {
     "available": "Kiralık",
 }
 
-# YAPAY ZEKANIN BEYNİ: KESİN KURALLAR BURADA
+
 SYSTEM_PROMPT = f"""Sen bir araç kiralama platformu için filtreleme asistanısın.
 Kullanıcının doğal dilde yazdığı isteği analiz et ve AŞAĞIDAKİ KURALLARA GÖRE SADECE JSON çıktısı üret. Başka hiçbir şey yazma.
 

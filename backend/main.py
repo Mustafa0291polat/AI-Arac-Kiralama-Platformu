@@ -10,7 +10,7 @@ from pathlib import Path
 import shutil, uuid, os
 from backend import models, schemas, database, ai_filter
 
-# Veritabanı kurulumu
+
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="AI Araç Kiralama API")
@@ -18,10 +18,10 @@ app.mount("/static", StaticFiles(directory="backend/static"), name="static")
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-# Şu anki satırı sil ve bunu yapıştır:
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# --- KULLANICI İŞLEMLERİ ---
+
 @app.get("/kayit", response_class=FileResponse)
 def get_register_page(): return FileResponse("backend/static/register.html")
 
@@ -36,7 +36,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     db.add(new_user); db.commit(); db.refresh(new_user)
     return new_user
 
-# --- ARAÇ VE AI İŞLEMLERİ ---
+
 @app.get("/", response_class=HTMLResponse)
 def read_index(): return Path("backend/static/index.html").read_text(encoding="utf-8")
 
@@ -50,7 +50,7 @@ def create_car(car: schemas.CarCreate, db: Session = Depends(database.get_db)):
     db.add(db_car); db.commit(); db.refresh(db_car)
     return db_car
 
-# --- BURAYA DİKKAT: build_car_query'yi burada kullanıyoruz ---
+
 @app.post("/filter/prompt", response_model=schemas.PromptResponse)
 def filter_by_prompt(request: schemas.FilterRequest, db: Session = Depends(database.get_db)):
     try:
@@ -71,12 +71,12 @@ async def upload_images(files: List[UploadFile] = File(...)):
         saved_urls.append(f"/static/images/{file_name}")
     return {"urls": saved_urls}
 
-# --- EKSİK OLAN VE ÇAĞIRILAN FONKSİYON BURAYA EKLENDİ ---
+
 def build_car_query(db: Session, filters: dict):
     query = db.query(models.Car).filter(models.Car.available == "Kiralık")
     if filters.get("city"): query = query.filter(models.Car.city.ilike(f"%{filters['city']}%"))
     if filters.get("brand"): query = query.filter(models.Car.brand.ilike(f"%{filters['brand']}%"))
     if filters.get("model"): query = query.filter(models.Car.model.ilike(f"%{filters['model']}%"))
     if filters.get("fuel_type"): query = query.filter(models.Car.fuel_type.ilike(f"%{filters['fuel_type']}%"))
-    # Diğer filtrelerini buraya eklemeye devam edebilirsin
+    
     return query.all()
