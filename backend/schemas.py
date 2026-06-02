@@ -1,16 +1,13 @@
+from typing import List, Optional
 from pydantic import BaseModel, EmailStr, field_validator
 
 class UserCreate(BaseModel):
-    username: str
+    first_name: str
+    last_name: str
     email: EmailStr
-    password: str
+    phone_number: str
     age: int
-
-    @field_validator('username')
-    def username_must_not_contain_spaces(cls, v):
-        if ' ' in v:
-            raise ValueError('Kullanıcı adında boşluk olamaz.')
-        return v
+    password: str
 
     @field_validator('age')
     def check_age_limit(cls, v):
@@ -21,5 +18,55 @@ class UserCreate(BaseModel):
         return v
 
 class UserLogin(BaseModel):
-    username: str
+    email: EmailStr
     password: str
+
+class UserOut(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    email: EmailStr
+    class Config:
+        from_attributes = True
+
+class CarBase(BaseModel):
+    owner_username: str
+    brand: str
+    model: str
+    city: str
+    district: Optional[str] = None
+    price: int
+    weekly_price: Optional[int] = None
+    monthly_price: Optional[int] = None
+    year: int
+    fuel_type: Optional[str] = None
+    transmission: Optional[str] = None
+    km: Optional[int] = None
+    body_type: Optional[str] = None
+    power_range: Optional[str] = None
+    engine_size: Optional[str] = None
+    drive_type: Optional[str] = None
+    color: Optional[str] = None
+    warranty: Optional[str] = None
+    heavy_damage: Optional[str] = None
+    seller_type: Optional[str] = None
+    image_url: Optional[str] = None
+    image_urls: Optional[str] = None
+    phone_number: Optional[str] = None
+    available: Optional[str] = "Kiralık"
+    description: Optional[str] = None
+
+class CarCreate(CarBase):
+    pass
+
+class CarOut(CarBase):
+    id: int
+    class Config:
+        from_attributes = True
+
+class FilterRequest(BaseModel):
+    prompt: str
+
+class PromptResponse(BaseModel):
+    parsed_filter: dict
+    matched_cars: List[CarOut]

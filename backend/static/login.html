@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Giriş Yap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-extrabold text-slate-800">Giriş Yap</h2>
+            <a href="/" class="text-sm text-sky-600 font-semibold">&larr; Ana Sayfa</a>
+        </div>
+        <form id="loginForm" class="space-y-5">
+            <div><label class="block text-sm font-semibold mb-1">E-posta</label><input type="email" id="email" class="w-full p-2.5 bg-slate-50 border rounded-lg" required></div>
+            <div><label class="block text-sm font-semibold mb-1">Şifre</label><input type="password" id="password" class="w-full p-2.5 bg-slate-50 border rounded-lg" required></div>
+            <button type="button" onclick="loginUser()" class="w-full mt-6 bg-sky-600 text-white font-bold py-3 rounded-lg">Giriş Yap</button>
+        </form>
+        <div class="mt-4 text-center"><p class="text-sm text-slate-500">Hesabın yok mu? <a href="/kayit" class="text-sky-600 font-bold hover:underline">Hemen Kayıt Ol</a></p></div>
+        <div id="loginMessage" class="mt-4 text-center text-sm hidden p-3 rounded-lg"></div>
+    </div>
+    <script>
+    async function loginUser() {
+        const loginData = { email: document.getElementById('email').value, password: document.getElementById('password').value };
+        const messageBox = document.getElementById('loginMessage');
+        try {
+            const response = await fetch('/api/login/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(loginData) });
+            const data = await response.json();
+            if (response.ok) {
+                messageBox.innerHTML = "✅ Giriş başarılı! Yönlendiriliyorsunuz..."; messageBox.className = "mt-4 text-center font-bold block bg-green-100 text-green-700 p-3 rounded-lg";
+                localStorage.setItem("loggedInUser", JSON.stringify(data.user));
+                setTimeout(() => window.location.href = "/", 1500);
+            } else {
+                messageBox.innerHTML = "❌ " + (data.detail || "Giriş başarısız."); messageBox.className = "mt-4 text-center font-bold block bg-red-100 text-red-700 p-3 rounded-lg";
+            }
+        } catch (error) { console.error(error); }
+    }
+    </script>
+</body>
+</html>

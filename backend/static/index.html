@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Araç Kiralama Platformu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+    <div class="mx-auto max-w-6xl px-5 py-10">
+        <header class="mb-10 rounded-3xl border border-white/10 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/30 backdrop-blur-sm">
+            <div class="space-y-4">
+                <p class="uppercase text-sm tracking-[0.3em] text-sky-400/80">AI Kiralık Araç Kataloğu</p>
+                <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Akıllı Yapay Zeka ile Kiralık Araç Bulma ve Kiralama Platformu</h1>
+                <p class="max-w-2xl text-slate-400">Anlattığınız özelliklere uygun kiralık araçları bul. Fotoğraflı ilanlarla hızlıca göz atın.</p>
+            </div>
+        </header>
+
+        <div id="authMenu" class="flex items-center space-x-4 mb-8"></div>
+
+        <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+            <div class="space-y-6">
+                <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <p class="text-sky-400 uppercase text-xs tracking-[0.3em]">Arama</p>
+                            <h2 class="mt-2 text-2xl font-semibold text-white">Hemen kiralık araç bul</h2>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button id="samplePromptBtn" class="rounded-full border border-slate-700 bg-white/5 px-5 py-2 text-sm text-slate-200 transition hover:border-sky-400">Örnek sorgu</button>
+                        </div>
+                    </div>
+                    <textarea id="promptInput" rows="5" class="mt-6 w-full resize-none rounded-3xl border border-slate-700 bg-slate-950/80 p-5 text-slate-100 outline-none transition focus:border-sky-400" placeholder="Örn: İstanbul'da manuel vitesli, dizel, beyaz sedan kiralık araç..." spellcheck="false"></textarea>
+                    <div class="mt-5 flex flex-col gap-3 sm:flex-row">
+                        <button id="searchBtn" class="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-3 text-base font-semibold text-white transition hover:bg-sky-400">Ara</button>
+                        <button id="loadCars" class="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-800 px-6 py-3 text-base text-slate-200 transition hover:border-sky-400">Tüm kiralık araçları göster</button>
+                    </div>
+                    <div class="mt-4 flex items-center gap-3 text-sm text-slate-300">
+                        <label for="durationSelect" class="font-medium">Kiralama süresi:</label>
+                        <select id="durationSelect" class="rounded-3xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                            <option value="daily">1 Gün (Günlük)</option>
+                            <option value="weekly">1 Hafta (Haftalık)</option>
+                            <option value="monthly">1 Ay (Aylık)</option>
+                        </select>
+                    </div>
+                    <div id="searchMessage" class="mt-4 hidden rounded-3xl border p-4 text-slate-100"></div>
+                </div>
+
+                <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30">
+                    <div class="flex items-center justify-between gap-4 mb-5">
+                        <div>
+                            <p class="text-emerald-400 uppercase text-xs tracking-[0.3em]">Kiralık Araçlar</p>
+                            <h2 class="mt-2 text-2xl font-semibold text-white">Eşleşen sonuçlar</h2>
+                        </div>
+                        <span id="totalCount" class="rounded-full bg-slate-800 px-4 py-2 text-sm text-slate-200">0 araç</span>
+                    </div>
+                    <div id="carResults" class="space-y-5"></div>
+                </div>
+            </div>
+
+            <aside class="rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30 h-fit">
+                <h2 class="text-2xl font-semibold text-white">Kiraya Çıkar</h2>
+                <p class="mt-4 text-slate-400">Kendi aracını kiraya vermek isteyenler bu formu kullanabilir.</p>
+
+                <form id="carForm" class="mt-6 space-y-4 rounded-3xl border border-slate-700 bg-slate-950/80 p-5">
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <input id="owner_username" type="text" placeholder="Sahip kullanıcı adı" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
+                        <input id="phone_number" type="text" placeholder="Telefon (Opsiyonel)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <input id="brand" type="text" placeholder="Marka (örn: Renault)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
+                        <input id="model" type="text" placeholder="Model (örn: Clio)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <input id="city" type="text" placeholder="İl" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
+                        <input id="district" type="text" placeholder="İlçe" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <input id="color" type="text" placeholder="Renk" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
+                        <input id="price" type="number" placeholder="Günlük fiyat (TL)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <input id="weekly_price" type="number" placeholder="Haftalık fiyat (TL)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                        <input id="monthly_price" type="number" placeholder="Aylık fiyat (TL)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <input id="year" type="number" placeholder="Yıl" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
+                        <input id="km" type="number" placeholder="KM" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <input id="fuel_type" type="text" placeholder="Yakıt tipi" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                        <input id="transmission" type="text" placeholder="Vites" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                         <input id="body_type" type="text" placeholder="Kasa tipi" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm text-slate-400 mb-2 px-2">Araç Fotoğrafları (Bilgisayardan Seçin)</label>
+                        <input id="car_images" type="file" multiple accept="image/png, image/jpeg, image/webp" class="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    </div>
+                    <textarea id="description" rows="3" placeholder="Açıklama" class="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400"></textarea>
+                    <button type="submit" class="w-full rounded-full bg-emerald-500 px-6 py-3 text-base font-semibold text-white transition hover:bg-emerald-400">Aracımı Kiraya Çıkar</button>
+                    <div id="carMessage" class="hidden rounded-3xl border p-4 text-slate-100"></div>
+                </form>
+            </aside>
+        </section>
+    </div>
+
+    <script>
+        const BASE_URL = window.location.origin;
+        const searchBtn = document.getElementById('searchBtn');
+        const samplePromptBtn = document.getElementById('samplePromptBtn');
+        const loadCarsBtn = document.getElementById('loadCars');
+        const durationSelect = document.getElementById('durationSelect');
+        const carForm = document.getElementById('carForm');
+        const carMessage = document.getElementById('carMessage');
+        const carResults = document.getElementById('carResults');
+        const searchMessage = document.getElementById('searchMessage');
+        const totalCount = document.getElementById('totalCount');
+        let currentCars = [];
+
+        function showMessage(text, type = 'success', target = searchMessage) {
+            target.classList.remove('hidden');
+            target.textContent = text;
+            target.className = `mt-4 rounded-3xl border p-4 text-slate-100 ${type === 'success' ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-100' : 'border-rose-500/20 bg-rose-500/10 text-rose-100'}`;
+        }
+
+        function getSelectedDuration() { return durationSelect?.value || 'daily'; }
+
+        function getRentalPrice(car) {
+            const daily = Number(car.price ?? 0);
+            const weekly = Number(car.weekly_price ?? daily * 7);
+            const monthly = Number(car.monthly_price ?? daily * 30);
+            const duration = getSelectedDuration();
+            if (duration === 'weekly') return { value: weekly, label: 'Haftalık kiralama' };
+            if (duration === 'monthly') return { value: monthly, label: 'Aylık kiralama' };
+            return { value: daily, label: 'Günlük kiralama' };
+        }
+
+        function renderCars(cars) {
+            totalCount.textContent = `${cars.length} araç`;
+            currentCars = cars;
+            if (!Array.isArray(cars) || cars.length === 0) {
+                carResults.innerHTML = '<div class="rounded-3xl border border-slate-700/60 bg-slate-950/90 p-6 text-slate-400">Eşleşen kiralık araç bulunamadı.</div>';
+                return;
+            }
+            carResults.innerHTML = cars.map(car => {
+                const priceInfo = getRentalPrice(car);
+                const imageList = (car.image_urls ? car.image_urls.split('|').map(src => src.trim()).filter(Boolean) : []).length > 0
+                    ? car.image_urls.split('|').map(src => src.trim()).filter(Boolean)
+                    : [car.image_url || 'https://placehold.co/800x600/0f172a/38bdf8?text=Gorsel+Yok'];
+                const mainImage = imageList[0];
+                return `
+                <article class="grid gap-4 rounded-3xl border border-slate-700/60 bg-slate-950/95 p-4 shadow-xl shadow-slate-950/10 lg:grid-cols-[320px_1fr]">
+                    <div class="overflow-hidden rounded-3xl bg-slate-900">
+                        <img src="${mainImage}" alt="${car.body_type || 'Araç'}" class="h-full w-full object-cover object-center min-h-[260px]">
+                    </div>
+                    <div class="flex flex-col justify-between gap-4 p-3">
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 text-sm">
+                                <span class="rounded-full bg-sky-500/10 px-3 py-1 text-sky-200">${car.available || 'Kiralık'}</span>
+                                <span class="rounded-full bg-slate-800 px-3 py-1 text-slate-300">${car.city}${car.district ? ' / ' + car.district : ''}</span>
+                            </div>
+                            <h3 class="mt-4 text-2xl font-semibold text-white">${car.brand || 'Marka Yok'} ${car.model || ''}</h3>
+                            <p class="mt-3 text-slate-400">${car.year} • ${car.transmission || 'Vites bilgisi yok'} • ${car.fuel_type || 'Yakıt bilgisi yok'}</p>
+                        </div>
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <div class="rounded-3xl bg-slate-900/80 p-4 text-sm text-slate-300 border border-slate-800">
+                                <p class="font-semibold text-white">Fiyat</p>
+                                <p class="mt-2 text-xl font-bold text-emerald-400">${priceInfo.value.toLocaleString('tr-TR')} TL</p>
+                            </div>
+                            <div class="rounded-3xl bg-slate-900/80 p-4 text-sm text-slate-300 border border-slate-800">
+                                <p class="font-semibold text-white">Detaylar</p>
+                                <p>Renk: ${car.color || '-'}</p>
+                                <p>İletişim: ${car.phone_number || '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>`;
+            }).join('');
+        }
+
+        async function fetchCars() {
+            try {
+                const response = await fetch(`${BASE_URL}/cars/`);
+                const cars = await response.json();
+                renderCars(cars);
+            } catch (error) { showMessage('Araçlar yüklenemedi.', 'error'); }
+        }
+
+        async function createCar(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('car_images');
+            let uploadedUrls = [];
+            if (fileInput.files.length > 0) {
+                const formData = new FormData();
+                for (let i = 0; i < fileInput.files.length; i++) formData.append('files', fileInput.files[i]);
+                const uploadRes = await fetch(`${BASE_URL}/upload-images/`, { method: 'POST', body: formData });
+                const uploadData = await uploadRes.json();
+                if (uploadRes.ok) uploadedUrls = uploadData.urls;
+            }
+            const payload = {
+                owner_username: document.getElementById('owner_username').value,
+                phone_number: document.getElementById('phone_number').value,
+                brand: document.getElementById('brand').value,
+                model: document.getElementById('model').value,
+                city: document.getElementById('city').value,
+                district: document.getElementById('district').value || null,
+                color: document.getElementById('color').value,
+                price: Number(document.getElementById('price').value),
+                year: Number(document.getElementById('year').value),
+                fuel_type: document.getElementById('fuel_type').value || null,
+                transmission: document.getElementById('transmission').value || null,
+                body_type: document.getElementById('body_type').value || null,
+                km: Number(document.getElementById('km').value) || null,
+                image_url: uploadedUrls[0] || null,
+                image_urls: uploadedUrls.join('|') || null,
+                available: 'Kiralık'
+            };
+            const response = await fetch(`${BASE_URL}/cars/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (response.ok) {
+                showMessage('Aracınız başarıyla eklendi!');
+                carForm.reset();
+                fetchCars();
+            }
+        }
+
+        async function searchPrompt() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            const response = await fetch(`${BASE_URL}/filter/prompt`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            const data = await response.json();
+            renderCars(data.matched_cars);
+        }
+
+        samplePromptBtn.addEventListener('click', () => { document.getElementById('promptInput').value = "İstanbul'da manuel vitesli, dizel, beyaz sedan bir araç arıyorum."; });
+        searchBtn.addEventListener('click', searchPrompt);
+        carForm.addEventListener('submit', createCar);
+        loadCarsBtn.addEventListener('click', fetchCars);
+
+        // KULLANICI GİRİŞ KONTROLÜ
+        document.addEventListener("DOMContentLoaded", function() {
+            const userJSON = localStorage.getItem("loggedInUser");
+            const authMenu = document.getElementById("authMenu");
+            
+            if (userJSON && authMenu) {
+                const user = JSON.parse(userJSON);
+                authMenu.innerHTML = `
+                    <span class="text-emerald-400 font-bold">Hoş geldin, ${user.first_name}!</span>
+                    <button onclick="logout()" class="bg-slate-800 hover:bg-rose-500 text-white text-sm font-bold py-2 px-4 rounded-full border border-slate-700 hover:border-rose-500 transition ml-4">Çıkış Yap</button>
+                `;
+            } else if (authMenu) {
+                authMenu.innerHTML = `
+                    <a href="/giris" class="text-slate-300 font-bold hover:text-white transition">Giriş Yap</a>
+                    <a href="/kayit" class="bg-sky-500 hover:bg-sky-400 text-white text-sm font-bold py-2 px-5 rounded-full transition ml-4">Kayıt Ol</a>
+                `;
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem("loggedInUser");
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

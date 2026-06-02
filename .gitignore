@@ -1,0 +1,8 @@
+# Local environment
+.env
+.env.*
+sql_app.db
+
+# Python cache
+__pycache__/
+*.pyc
