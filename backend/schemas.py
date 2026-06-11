@@ -1,21 +1,52 @@
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr, field_validator
 
+from pydantic import BaseModel, EmailStr, field_validator
+
 class UserCreate(BaseModel):
     first_name: str
     last_name: str
-    email: EmailStr
+    email: str  # @gmail.com kısıtlaması için özel kontrol yazacağız
     phone_number: str
     age: int
     password: str
 
+    @field_validator('first_name', 'last_name')
+    @classmethod
+    def check_names(cls, v):
+        if ' ' in v:
+            raise ValueError('İsim ve soyisimde boşluk bırakılamaz.')
+        if len(v) > 30:
+            raise ValueError('İsim ve soyisim 30 karakterden uzun olamaz.')
+        return v
+
+    @field_validator('email')
+    @classmethod
+    def check_email(cls, v):
+        if ' ' in v:
+            raise ValueError('E-posta adresinde boşluk bırakılamaz.')
+        if len(v) > 50:
+            raise ValueError('E-posta adresi 50 karakterden uzun olamaz.')
+        if not v.endswith('@gmail.com'):
+            raise ValueError('Sadece @gmail.com uzantılı mail adresleri ile kayıt olabilirsiniz.')
+        return v
+    @field_validator('password')
+    @classmethod
+    def check_password(cls, v):
+        if len(v) < 8:
+            raise ValueError('Şifre en az 8 karakter olmalıdır.')
+        if len(v) > 20:
+            raise ValueError('Şifre 20 karakterden uzun olamaz.')
+        return v
+
     @field_validator('age')
+    @classmethod
     def check_age_limit(cls, v):
         if v < 18:
             raise ValueError('Kayıt olmak için en az 18 yaşında olmalısınız.')
-        if v < 0:
-            raise ValueError('Yaş negatif olamaz.')
         return v
+
+# UserLogin, UserOut, CarBase vb. altındaki diğer sınıflar AYNLEN kalsın, onlara dokunma.
 
 class UserLogin(BaseModel):
     email: EmailStr

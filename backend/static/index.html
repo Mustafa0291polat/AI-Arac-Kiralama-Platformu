@@ -5,105 +5,169 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Araç Kiralama Platformu</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Yüzen Animasyonlar */
+        @keyframes float {
+            0% { transform: translateY(0px) translateX(0px) scale(1); }
+            33% { transform: translateY(-30px) translateX(40px) scale(1.05); }
+            66% { transform: translateY(20px) translateX(-30px) scale(0.95); }
+            100% { transform: translateY(0px) translateX(0px) scale(1); }
+        }
+        .animate-blob-1 { animation: float 12s ease-in-out infinite; }
+        .animate-blob-2 { animation: float 15s ease-in-out infinite reverse; }
+        .animate-blob-3 { animation: float 10s ease-in-out infinite 2s; }
+        
+        /* Ekstra parlaklık glow'u */
+        .glow-shadow { box-shadow: 0 0 30px rgba(14, 165, 233, 0.15); }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
-    <div class="mx-auto max-w-6xl px-5 py-10">
-        <header class="mb-10 rounded-3xl border border-white/10 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/30 backdrop-blur-sm">
-            <div class="space-y-4">
-                <p class="uppercase text-sm tracking-[0.3em] text-sky-400/80">AI Kiralık Araç Kataloğu</p>
-                <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Akıllı Yapay Zeka ile Kiralık Araç Bulma ve Kiralama Platformu</h1>
-                <p class="max-w-2xl text-slate-400">Anlattığınız özelliklere uygun kiralık araçları bul. Fotoğraflı ilanlarla hızlıca göz atın.</p>
+<body class="bg-slate-950 text-slate-100 min-h-screen relative overflow-x-hidden">
+    
+    <div class="fixed inset-0 pointer-events-none -z-10">
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
+        <div class="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-sky-600/20 blur-[130px] animate-blob-1"></div>
+        <div class="absolute top-[20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-emerald-500/10 blur-[150px] animate-blob-2"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-[40vw] h-[40vw] rounded-full bg-indigo-500/15 blur-[120px] animate-blob-3"></div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-5 py-10 relative z-10">
+        <header class="mb-12 rounded-[2.5rem] border border-white/10 bg-slate-900/30 p-10 sm:p-14 shadow-2xl backdrop-blur-2xl text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-8 glow-shadow">
+            <div class="space-y-4 max-w-3xl">
+                <p class="uppercase text-xs font-bold tracking-[0.4em] text-sky-400">Yapay Zeka Destekli Platform</p>
+                <h1 class="text-4xl font-extrabold sm:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-white via-sky-200 to-emerald-200">
+                    Akıllı Araç Bulma & Kiralama
+                </h1>
+                <p class="text-lg text-slate-400 leading-relaxed">Nasıl bir araç aradığınızı kendi cümlelerinizle anlatın, yapay zeka sizin için en uygun ilanları saniyeler içinde eşleştirsin.</p>
             </div>
+            <div id="authMenu" class="flex flex-col sm:flex-row items-center gap-4 shrink-0 bg-slate-950/50 p-3 rounded-full border border-white/5"></div>
         </header>
 
-        <div id="authMenu" class="flex items-center space-x-4 mb-8"></div>
-
-        <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-            <div class="space-y-6">
-                <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                        <div>
-                            <p class="text-sky-400 uppercase text-xs tracking-[0.3em]">Arama</p>
-                            <h2 class="mt-2 text-2xl font-semibold text-white">Hemen kiralık araç bul</h2>
+        <section class="grid gap-8 lg:grid-cols-[1.3fr_0.7fr]">
+            
+            <div class="space-y-8">
+                <div class="rounded-[2.5rem] border border-white/10 bg-slate-900/40 p-8 shadow-xl backdrop-blur-2xl relative overflow-hidden group glow-shadow">
+                    <div class="absolute inset-0 bg-gradient-to-r from-sky-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                            <div>
+                                <p class="text-emerald-400 uppercase text-xs tracking-[0.3em] font-semibold">Keşfet</p>
+                                <h2 class="mt-2 text-3xl font-bold text-white">Hemen Kiralık Araç Bul</h2>
+                            </div>
+                            <button id="samplePromptBtn" class="rounded-full border border-white/10 bg-slate-950/50 px-5 py-2 text-sm text-slate-300 transition hover:border-sky-400 hover:text-sky-300">Örnek Sorgu Yaz</button>
                         </div>
-                        <div class="flex flex-wrap gap-2">
-                            <button id="samplePromptBtn" class="rounded-full border border-slate-700 bg-white/5 px-5 py-2 text-sm text-slate-200 transition hover:border-sky-400">Örnek sorgu</button>
+                        
+                        <textarea id="promptInput" rows="4" class="mt-6 w-full resize-none rounded-3xl border border-white/10 bg-slate-950/60 p-6 text-slate-100 text-lg outline-none transition focus:border-sky-500 focus:bg-slate-950/80 shadow-inner" placeholder="Örn: İstanbul'da manuel vitesli, dizel, beyaz sedan kiralık araç..." spellcheck="false"></textarea>
+                        
+                        <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="flex items-center gap-3 text-sm text-slate-300 w-full sm:w-auto">
+                                <label for="durationSelect" class="font-medium whitespace-nowrap">Kiralama Süresi:</label>
+                                <select id="durationSelect" class="w-full sm:w-auto rounded-full border border-white/10 bg-slate-950 px-4 py-3 text-slate-200 outline-none focus:border-sky-500 transition-colors cursor-pointer">
+                                    <option value="daily">1 Gün (Günlük)</option>
+                                    <option value="weekly">1 Hafta (Haftalık)</option>
+                                    <option value="monthly">1 Ay (Aylık)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                <button id="loadCars" class="w-full sm:w-auto inline-flex items-center justify-center rounded-full border border-white/10 bg-slate-800/80 px-6 py-3.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-700">Tümünü Göster</button>
+                                <button id="searchBtn" class="w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-emerald-500 px-8 py-3.5 text-sm font-bold text-white transition transform hover:scale-105 shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)]">Akıllı Arama Yap</button>
+                            </div>
                         </div>
+                        <div id="searchMessage" class="mt-6 hidden rounded-2xl border p-4 text-sm font-medium backdrop-blur-md"></div>
                     </div>
-                    <textarea id="promptInput" rows="5" class="mt-6 w-full resize-none rounded-3xl border border-slate-700 bg-slate-950/80 p-5 text-slate-100 outline-none transition focus:border-sky-400" placeholder="Örn: İstanbul'da manuel vitesli, dizel, beyaz sedan kiralık araç..." spellcheck="false"></textarea>
-                    <div class="mt-5 flex flex-col gap-3 sm:flex-row">
-                        <button id="searchBtn" class="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-3 text-base font-semibold text-white transition hover:bg-sky-400">Ara</button>
-                        <button id="loadCars" class="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-800 px-6 py-3 text-base text-slate-200 transition hover:border-sky-400">Tüm kiralık araçları göster</button>
-                    </div>
-                    <div class="mt-4 flex items-center gap-3 text-sm text-slate-300">
-                        <label for="durationSelect" class="font-medium">Kiralama süresi:</label>
-                        <select id="durationSelect" class="rounded-3xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
-                            <option value="daily">1 Gün (Günlük)</option>
-                            <option value="weekly">1 Hafta (Haftalık)</option>
-                            <option value="monthly">1 Ay (Aylık)</option>
-                        </select>
-                    </div>
-                    <div id="searchMessage" class="mt-4 hidden rounded-3xl border p-4 text-slate-100"></div>
                 </div>
 
-                <div class="rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30">
-                    <div class="flex items-center justify-between gap-4 mb-5">
+                <div class="rounded-[2.5rem] border border-white/10 bg-slate-900/40 p-8 shadow-xl backdrop-blur-2xl glow-shadow">
+                    <div class="flex items-center justify-between mb-8">
                         <div>
-                            <p class="text-emerald-400 uppercase text-xs tracking-[0.3em]">Kiralık Araçlar</p>
-                            <h2 class="mt-2 text-2xl font-semibold text-white">Eşleşen sonuçlar</h2>
+                            <h2 class="text-2xl font-bold text-white">Eşleşen Sonuçlar</h2>
+                            <p class="text-sm text-slate-400 mt-1">Gereksinimlerinize uygun araçlar</p>
                         </div>
-                        <span id="totalCount" class="rounded-full bg-slate-800 px-4 py-2 text-sm text-slate-200">0 araç</span>
+                        <span id="totalCount" class="rounded-full bg-slate-950/80 border border-white/10 px-5 py-2 text-sm font-semibold text-sky-300 shadow-inner">0 Araç</span>
                     </div>
-                    <div id="carResults" class="space-y-5"></div>
+                    <div id="carResults" class="space-y-6"></div>
                 </div>
             </div>
 
-            <aside class="rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30 h-fit">
-                <h2 class="text-2xl font-semibold text-white">Kiraya Çıkar</h2>
-                <p class="mt-4 text-slate-400">Kendi aracını kiraya vermek isteyenler bu formu kullanabilir.</p>
+            <aside class="rounded-[2.5rem] border border-white/10 bg-slate-900/40 p-8 shadow-xl backdrop-blur-2xl h-fit sticky top-10 glow-shadow">
+                <div class="mb-8">
+                    <p class="text-sky-400 uppercase text-xs tracking-[0.3em] font-semibold">İlan Yönetimi</p>
+                    <h2 class="mt-2 text-3xl font-bold text-white">Aracını Kiraya Ver</h2>
+                </div>
 
-                <form id="carForm" class="mt-6 space-y-4 rounded-3xl border border-slate-700 bg-slate-950/80 p-5">
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        <input id="owner_username" type="text" placeholder="Sahip kullanıcı adı" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
-                        <input id="phone_number" type="text" placeholder="Telefon (Opsiyonel)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                <form id="carForm" class="space-y-4">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <input id="owner_username" type="text" placeholder="Sahip Kullanıcı Adı" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors" required>
+                        <input id="phone_number" type="text" placeholder="Telefon" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors">
                     </div>
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        <input id="brand" type="text" placeholder="Marka (örn: Renault)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
-                        <input id="model" type="text" placeholder="Model (örn: Clio)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <input id="brand" type="text" placeholder="Marka" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors" required>
+                        <input id="model" type="text" placeholder="Model" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors" required>
                     </div>
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        <input id="city" type="text" placeholder="İl" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
-                        <input id="district" type="text" placeholder="İlçe" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <input id="city" type="text" placeholder="İl" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors" required>
+                        <input id="district" type="text" placeholder="İlçe" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors">
                     </div>
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        <input id="color" type="text" placeholder="Renk" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
-                        <input id="price" type="number" placeholder="Günlük fiyat (TL)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <input id="price" type="number" placeholder="Günlük Fiyat (TL)" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors" required>
+                        <input id="color" type="text" placeholder="Renk" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors" required>
                     </div>
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        <input id="weekly_price" type="number" placeholder="Haftalık fiyat (TL)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
-                        <input id="monthly_price" type="number" placeholder="Aylık fiyat (TL)" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <input id="year" type="number" placeholder="Yıl" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors" required>
+                        <input id="km" type="number" placeholder="Kilometre" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors">
                     </div>
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        <input id="year" type="number" placeholder="Yıl" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400" required>
-                        <input id="km" type="number" placeholder="KM" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <input id="fuel_type" type="text" placeholder="Yakıt Tipi" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors">
+                        <input id="transmission" type="text" placeholder="Vites Tipi" class="rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors">
                     </div>
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        <input id="fuel_type" type="text" placeholder="Yakıt tipi" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
-                        <input id="transmission" type="text" placeholder="Vites" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    
+                    <div>
+                        <input id="body_type" type="text" placeholder="Kasa Tipi (Örn: Sedan, SUV)" class="w-full rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3.5 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors">
                     </div>
-                    <div class="grid gap-3 sm:grid-cols-2">
-                         <input id="body_type" type="text" placeholder="Kasa tipi" class="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-2 ml-1">Araç Fotoğrafları Seç</label>
+                        <input id="car_images" type="file" multiple accept="image/png, image/jpeg, image/webp" class="w-full rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-3 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-sky-500/10 file:text-sky-400 hover:file:bg-sky-500/20 cursor-pointer">
                     </div>
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm text-slate-400 mb-2 px-2">Araç Fotoğrafları (Bilgisayardan Seçin)</label>
-                        <input id="car_images" type="file" multiple accept="image/png, image/jpeg, image/webp" class="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400">
-                    </div>
-                    <textarea id="description" rows="3" placeholder="Açıklama" class="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-sky-400"></textarea>
-                    <button type="submit" class="w-full rounded-full bg-emerald-500 px-6 py-3 text-base font-semibold text-white transition hover:bg-emerald-400">Aracımı Kiraya Çıkar</button>
-                    <div id="carMessage" class="hidden rounded-3xl border p-4 text-slate-100"></div>
+                    
+                    <textarea id="description" rows="3" placeholder="Araç hakkında kısa açıklama..." class="w-full rounded-2xl border border-white/5 bg-slate-950/60 px-5 py-4 text-sm text-slate-200 outline-none focus:border-sky-500 transition-colors resize-none"></textarea>
+                    
+<button type="submit" class="w-full rounded-full bg-gradient-to-r from-sky-500 to-emerald-500 px-8 py-3.5 text-sm font-bold text-white transition transform hover:scale-105 shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)]">İlanı Yayınla</button>
+                    
+                    <div id="carMessage" class="hidden mt-4 rounded-2xl border p-4 text-sm font-medium backdrop-blur-md"></div>
                 </form>
             </aside>
         </section>
+    </div>
+
+    <div id="contactModal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="closeContactModal()"></div>
+        
+        <div class="relative z-10 w-full max-w-sm p-8 rounded-[2.5rem] bg-slate-900/80 backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] transform scale-95 transition-transform duration-300" id="modalContent">
+            <button onclick="closeContactModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-white/5 hover:bg-rose-500/80 rounded-full w-8 h-8 flex items-center justify-center transition-colors">✕</button>
+            
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 mx-auto bg-gradient-to-tr from-sky-400 to-emerald-400 rounded-full flex items-center justify-center text-3xl mb-4 shadow-lg shadow-sky-500/30">📞</div>
+                <h3 class="text-2xl font-bold text-white mb-1">İletişim Bilgileri</h3>
+                <p class="text-slate-400 text-sm" id="modalCarName">Araç Modeli</p>
+            </div>
+            
+            <div class="space-y-4 bg-slate-950/50 p-6 rounded-3xl border border-white/5">
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Araç Sahibi</p>
+                    <p class="text-lg font-medium text-slate-200" id="modalOwnerName">-</p>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Telefon Numarası</p>
+                    <a href="#" id="modalPhoneLink" class="text-2xl font-bold text-sky-400 hover:text-sky-300 transition-colors flex items-center gap-2">
+                        <span id="modalPhoneNumber">-</span>
+                    </a>
+                </div>
+            </div>
+            
+            <button onclick="closeContactModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-2xl transition-colors border border-white/5">Kapat</button>
+        </div>
     </div>
 
     <script>
@@ -122,7 +186,7 @@
         function showMessage(text, type = 'success', target = searchMessage) {
             target.classList.remove('hidden');
             target.textContent = text;
-            target.className = `mt-4 rounded-3xl border p-4 text-slate-100 ${type === 'success' ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-100' : 'border-rose-500/20 bg-rose-500/10 text-rose-100'}`;
+            target.className = `mt-6 text-center font-semibold block p-4 rounded-2xl backdrop-blur-md transition-all ${type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-300' : 'bg-rose-500/10 border border-rose-500/20 text-rose-300'}`;
         }
 
         function getSelectedDuration() { return durationSelect?.value || 'daily'; }
@@ -137,43 +201,43 @@
             return { value: daily, label: 'Günlük kiralama' };
         }
 
+        // Araçları Ekrana Basan Fonksiyon (İletişim Butonu Güncellendi)
         function renderCars(cars) {
-            totalCount.textContent = `${cars.length} araç`;
+            totalCount.textContent = `${cars.length} Araç`;
             currentCars = cars;
             if (!Array.isArray(cars) || cars.length === 0) {
-                carResults.innerHTML = '<div class="rounded-3xl border border-slate-700/60 bg-slate-950/90 p-6 text-slate-400">Eşleşen kiralık araç bulunamadı.</div>';
+                carResults.innerHTML = '<div class="rounded-[2rem] border border-dashed border-white/10 bg-slate-950/50 p-10 text-center text-slate-400 font-medium">Eşleşen araç bulunamadı. Kriterlerinizi değiştirip tekrar deneyin.</div>';
                 return;
             }
-            carResults.innerHTML = cars.map(car => {
+            carResults.innerHTML = cars.map((car, index) => {
                 const priceInfo = getRentalPrice(car);
                 const imageList = (car.image_urls ? car.image_urls.split('|').map(src => src.trim()).filter(Boolean) : []).length > 0
                     ? car.image_urls.split('|').map(src => src.trim()).filter(Boolean)
                     : [car.image_url || 'https://placehold.co/800x600/0f172a/38bdf8?text=Gorsel+Yok'];
                 const mainImage = imageList[0];
                 return `
-                <article class="grid gap-4 rounded-3xl border border-slate-700/60 bg-slate-950/95 p-4 shadow-xl shadow-slate-950/10 lg:grid-cols-[320px_1fr]">
-                    <div class="overflow-hidden rounded-3xl bg-slate-900">
-                        <img src="${mainImage}" alt="${car.body_type || 'Araç'}" class="h-full w-full object-cover object-center min-h-[260px]">
+                <article class="group grid gap-6 rounded-[2rem] border border-white/5 bg-slate-950/60 p-5 shadow-lg hover:shadow-[0_0_30px_rgba(14,165,233,0.1)] hover:-translate-y-1 hover:border-white/10 transition-all duration-300 lg:grid-cols-[280px_1fr]">
+                    <div class="overflow-hidden rounded-[1.5rem] bg-slate-900 relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 to-transparent z-10 pointer-events-none"></div>
+                        <img src="${mainImage}" alt="${car.brand}" class="h-full w-full object-cover object-center min-h-[220px] group-hover:scale-105 transition-transform duration-700">
+                        <span class="absolute bottom-4 left-4 z-20 rounded-full bg-sky-500/20 backdrop-blur-md border border-sky-500/30 px-3 py-1 text-xs font-bold text-sky-300 uppercase tracking-wider">${car.available || 'Kiralık'}</span>
                     </div>
-                    <div class="flex flex-col justify-between gap-4 p-3">
+                    <div class="flex flex-col justify-between py-2">
                         <div>
-                            <div class="flex flex-wrap items-center gap-2 text-sm">
-                                <span class="rounded-full bg-sky-500/10 px-3 py-1 text-sky-200">${car.available || 'Kiralık'}</span>
-                                <span class="rounded-full bg-slate-800 px-3 py-1 text-slate-300">${car.city}${car.district ? ' / ' + car.district : ''}</span>
+                            <div class="flex flex-wrap items-center gap-2 mb-3">
+                                <span class="rounded-full bg-slate-900 border border-white/5 px-3 py-1 text-xs text-slate-300 font-medium flex items-center gap-1">📍 ${car.city}${car.district ? ', ' + car.district : ''}</span>
+                                <span class="rounded-full bg-slate-900 border border-white/5 px-3 py-1 text-xs text-slate-300 font-medium flex items-center gap-1">🚗 ${car.year}</span>
                             </div>
-                            <h3 class="mt-4 text-2xl font-semibold text-white">${car.brand || 'Marka Yok'} ${car.model || ''}</h3>
-                            <p class="mt-3 text-slate-400">${car.year} • ${car.transmission || 'Vites bilgisi yok'} • ${car.fuel_type || 'Yakıt bilgisi yok'}</p>
+                            <h3 class="text-2xl font-bold text-white group-hover:text-sky-400 transition-colors">${car.brand || ''} ${car.model || ''}</h3>
+                            <p class="mt-2 text-sm text-slate-400">${car.transmission || '-'} • ${car.fuel_type || '-'} • ${car.body_type || '-'}</p>
+                            <p class="mt-3 text-sm text-slate-500 line-clamp-2">${car.description || 'Araç açıklaması bulunmuyor.'}</p>
                         </div>
-                        <div class="grid gap-3 sm:grid-cols-2">
-                            <div class="rounded-3xl bg-slate-900/80 p-4 text-sm text-slate-300 border border-slate-800">
-                                <p class="font-semibold text-white">Fiyat</p>
-                                <p class="mt-2 text-xl font-bold text-emerald-400">${priceInfo.value.toLocaleString('tr-TR')} TL</p>
+                        <div class="mt-6 flex flex-wrap items-end justify-between gap-4 border-t border-white/5 pt-5">
+                            <div>
+                                <p class="text-xs text-slate-500 mb-1">Fiyat (${priceInfo.label})</p>
+                                <p class="text-2xl font-black text-emerald-400">${priceInfo.value.toLocaleString('tr-TR')} ₺</p>
                             </div>
-                            <div class="rounded-3xl bg-slate-900/80 p-4 text-sm text-slate-300 border border-slate-800">
-                                <p class="font-semibold text-white">Detaylar</p>
-                                <p>Renk: ${car.color || '-'}</p>
-                                <p>İletişim: ${car.phone_number || '-'}</p>
-                            </div>
+                            <button onclick="openContactModal(${index})" class="rounded-full bg-slate-800 border border-white/5 hover:bg-sky-500 hover:text-white px-6 py-2.5 text-sm font-bold text-white transition-all shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(14,165,233,0.4)]">İletişime Geç</button>
                         </div>
                     </div>
                 </article>`;
@@ -185,7 +249,7 @@
                 const response = await fetch(`${BASE_URL}/cars/`);
                 const cars = await response.json();
                 renderCars(cars);
-            } catch (error) { showMessage('Araçlar yüklenemedi.', 'error'); }
+            } catch (error) { showMessage('Araçlar yüklenemedi.', 'error', carMessage); }
         }
 
         async function createCar(event) {
@@ -215,15 +279,12 @@
                 km: Number(document.getElementById('km').value) || null,
                 image_url: uploadedUrls[0] || null,
                 image_urls: uploadedUrls.join('|') || null,
-                available: 'Kiralık'
+                available: 'Kiralık',
+                description: document.getElementById('description').value || null
             };
-            const response = await fetch(`${BASE_URL}/cars/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            const response = await fetch(`${BASE_URL}/cars/`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             if (response.ok) {
-                showMessage('Aracınız başarıyla eklendi!');
+                showMessage('İlanınız başarıyla yayınlandı!', 'success', carMessage);
                 carForm.reset();
                 fetchCars();
             }
@@ -231,37 +292,116 @@
 
         async function searchPrompt() {
             const prompt = document.getElementById('promptInput').value.trim();
-            const response = await fetch(`${BASE_URL}/filter/prompt`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt })
-            });
+            if(!prompt) return;
+            const response = await fetch(`${BASE_URL}/filter/prompt`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt }) });
             const data = await response.json();
             renderCars(data.matched_cars);
+            if(data.matched_cars.length > 0) { showMessage('Eşleşen sonuçlar listelendi.', 'success', searchMessage); }
+            else { searchMessage.classList.add('hidden'); }
         }
 
-        samplePromptBtn.addEventListener('click', () => { document.getElementById('promptInput').value = "İstanbul'da manuel vitesli, dizel, beyaz sedan bir araç arıyorum."; });
+        // Modal Fonksiyonları Eklendi
+        function openContactModal(index) {
+            const car = currentCars[index];
+            if (!car) return;
+            
+            document.getElementById('modalCarName').textContent = `${car.brand} ${car.model} (${car.year})`;
+            document.getElementById('modalOwnerName').textContent = car.owner_username || 'Bilinmiyor';
+            
+            const phone = car.phone_number || 'Telefon belirtilmemiş';
+            document.getElementById('modalPhoneNumber').textContent = phone;
+            
+            const phoneLink = document.getElementById('modalPhoneLink');
+            if (car.phone_number) {
+                phoneLink.href = `tel:${car.phone_number}`;
+                phoneLink.classList.remove('cursor-default', 'text-slate-400');
+                phoneLink.classList.add('text-sky-400', 'hover:text-sky-300');
+            } else {
+                phoneLink.removeAttribute('href');
+                phoneLink.classList.add('cursor-default', 'text-slate-400');
+                phoneLink.classList.remove('text-sky-400', 'hover:text-sky-300');
+            }
+            
+            const modal = document.getElementById('contactModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); 
+        }
+
+        samplePromptBtn.addEventListener('click', () => { document.getElementById('promptInput').value = "İstanbul'da otomatik vites, şehir içi kullanımına uygun küçük bir araç arıyorum."; });
         searchBtn.addEventListener('click', searchPrompt);
         carForm.addEventListener('submit', createCar);
         loadCarsBtn.addEventListener('click', fetchCars);
+        durationSelect.addEventListener('change', () => renderCars(currentCars));
 
-        // KULLANICI GİRİŞ KONTROLÜ
+        // --- GİRİŞ KONTROLÜ VE FORM YETKİLENDİRME ---
         document.addEventListener("DOMContentLoaded", function() {
             const userJSON = localStorage.getItem("loggedInUser");
             const authMenu = document.getElementById("authMenu");
-            
-            if (userJSON && authMenu) {
+            const formContainer = document.getElementById("carForm");
+
+            if (userJSON) {
                 const user = JSON.parse(userJSON);
-                authMenu.innerHTML = `
-                    <span class="text-emerald-400 font-bold">Hoş geldin, ${user.first_name}!</span>
-                    <button onclick="logout()" class="bg-slate-800 hover:bg-rose-500 text-white text-sm font-bold py-2 px-4 rounded-full border border-slate-700 hover:border-rose-500 transition ml-4">Çıkış Yap</button>
-                `;
-            } else if (authMenu) {
-                authMenu.innerHTML = `
-                    <a href="/giris" class="text-slate-300 font-bold hover:text-white transition">Giriş Yap</a>
-                    <a href="/kayit" class="bg-sky-500 hover:bg-sky-400 text-white text-sm font-bold py-2 px-5 rounded-full transition ml-4">Kayıt Ol</a>
-                `;
+                if (authMenu) {
+                    authMenu.innerHTML = `
+                        <div class="flex items-center gap-3 px-3">
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-400 to-emerald-400 flex items-center justify-center text-slate-900 font-bold text-sm shadow-inner">
+                                ${user.first_name.charAt(0)}${user.last_name.charAt(0)}
+                            </div>
+                            <span class="text-slate-200 font-semibold text-sm mr-2">${user.first_name}</span>
+                        </div>
+                        <button onclick="logout()" class="text-xs font-bold text-rose-400 hover:text-white hover:bg-rose-500/20 px-5 py-2.5 rounded-full transition-colors border border-rose-500/20">Çıkış Yap</button>
+                    `;
+                }
+                const ownerInput = document.getElementById("owner_username");
+                if (ownerInput) {
+                    ownerInput.value = user.first_name + " " + user.last_name;
+                    ownerInput.readOnly = true;
+                    ownerInput.classList.add("bg-slate-900", "text-slate-500", "cursor-not-allowed", "border-white/5");
+                }
+            } else {
+                if (authMenu) {
+                    authMenu.classList.remove("p-3", "bg-slate-950/50", "border", "rounded-full");
+                    authMenu.innerHTML = `
+                        <a href="/giris" class="text-sm font-semibold text-slate-300 hover:text-white px-5 py-2.5 transition-colors">Giriş Yap</a>
+                        <a href="/kayit" class="bg-white text-slate-900 hover:bg-slate-200 text-sm font-bold py-2.5 px-7 rounded-full transition-colors shadow-[0_0_15px_rgba(255,255,255,0.15)]">Kayıt Ol</a>
+                    `;
+                }
+                if (formContainer) {
+                    formContainer.innerHTML = `
+                        <div class="bg-slate-950/60 border border-white/5 text-slate-300 p-10 rounded-3xl text-center backdrop-blur-md">
+                            <div class="w-20 h-20 bg-slate-900/80 rounded-full flex items-center justify-center mx-auto mb-5 border border-white/10 shadow-inner">
+                                <span class="text-3xl">🔒</span>
+                            </div>
+                            <p class="mb-8 font-medium text-sm leading-relaxed text-slate-400">İlan verebilmek ve aracınızı kiraya çıkarabilmek için platforma üye olmalısınız.</p>
+                            <div class="flex flex-col gap-4">
+                                <a href="/giris" class="w-full bg-slate-800 text-white font-bold py-3.5 px-6 rounded-2xl hover:bg-slate-700 border border-white/5 transition-all">Mevcut Hesaba Giriş</a>
+                                <a href="/kayit" class="w-full bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-bold py-3.5 px-6 rounded-2xl hover:from-sky-400 hover:to-emerald-400 shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:-translate-y-0.5 transition-all">Hemen Kayıt Ol</a>
+                            </div>
+                        </div>
+                    `;
+                }
             }
+            
+            carResults.innerHTML = '<div class="rounded-[2rem] border border-dashed border-white/10 bg-slate-950/50 p-10 text-center text-slate-400 font-medium">Araçları görmek için arama yapın veya "Tümünü Göster" butonuna tıklayın.</div>';
         });
 
         function logout() {
@@ -269,5 +409,135 @@
             window.location.reload();
         }
     </script>
-</body>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Galeri HTML'ini dinamik olarak oluştur ve sayfaya ekle
+            const lightboxHTML = `
+            <div id="ai-lightbox" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300 bg-slate-950/95 backdrop-blur-xl">
+                <button id="lb-close" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-white/5 hover:bg-rose-500/80 rounded-full w-10 h-10 flex items-center justify-center transition-colors text-xl z-50 shadow-lg">✕</button>
+                
+                <button id="lb-prev" class="absolute left-4 sm:left-10 text-white bg-slate-800/50 hover:bg-sky-500 hover:shadow-[0_0_20px_rgba(14,165,233,0.5)] rounded-full w-12 h-12 flex items-center justify-center transition-all text-2xl z-50 backdrop-blur-md border border-white/10 hidden">❮</button>
+                
+                <div class="relative max-w-5xl max-h-[80vh] w-full mx-4 flex flex-col items-center">
+                    <img id="lb-img" src="" alt="Araç Görseli Büyük" class="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-transform duration-300">
+                    <div id="lb-counter" class="absolute -bottom-12 left-1/2 transform -translate-x-1/2 text-sky-300 text-sm font-bold tracking-widest bg-slate-900/80 px-5 py-2 rounded-full border border-sky-500/30 backdrop-blur-md shadow-[0_0_15px_rgba(14,165,233,0.2)]">1 / 1</div>
+                </div>
+                
+                <button id="lb-next" class="absolute right-4 sm:right-10 text-white bg-slate-800/50 hover:bg-sky-500 hover:shadow-[0_0_20px_rgba(14,165,233,0.5)] rounded-full w-12 h-12 flex items-center justify-center transition-all text-2xl z-50 backdrop-blur-md border border-white/10 hidden">❯</button>
+            </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', lightboxHTML);
+
+            // 2. Mouse resmin üzerine gelince tıklanabilir olduğunu (el işareti) gösteren CSS
+            const style = document.createElement('style');
+            style.textContent = `#carResults img { cursor: zoom-in; }`;
+            document.head.appendChild(style);
+
+            // 3. Değişkenleri Tanımla
+            const lightbox = document.getElementById('ai-lightbox');
+            const lbImg = document.getElementById('lb-img');
+            const lbClose = document.getElementById('lb-close');
+            const lbPrev = document.getElementById('lb-prev');
+            const lbNext = document.getElementById('lb-next');
+            const lbCounter = document.getElementById('lb-counter');
+            
+            let currentImages = [];
+            let currentImageIndex = 0;
+
+            // 4. Ana listeye tıklamaları dinle (Event Delegation ile mevcut kodunu bozmadan çalışır)
+            document.getElementById('carResults').addEventListener('click', function(e) {
+                if (e.target.tagName === 'IMG') {
+                    const article = e.target.closest('article');
+                    const articles = Array.from(this.querySelectorAll('article'));
+                    const index = articles.indexOf(article);
+                    
+                    if (index > -1 && currentCars[index]) {
+                        const car = currentCars[index];
+                        
+                        let images = car.image_urls ? car.image_urls.split('|').map(src => src.trim()).filter(Boolean) : [];
+                        
+                        if (images.length === 0 && car.image_url) {
+                            images.push(car.image_url);
+                        }
+                        
+                        if (images.length === 0) {
+                            images.push('https://placehold.co/800x600/0f172a/38bdf8?text=Gorsel+Yok');
+                        }
+                        
+                        openLightbox(images, 0);
+                    }
+                }
+            });
+
+            // 5. Galeri Kontrol Fonksiyonları
+            function openLightbox(images, index) {
+                currentImages = images;
+                currentImageIndex = index;
+                updateLightboxView();
+                
+                lightbox.classList.remove('hidden');
+                setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                lightbox.classList.add('opacity-0');
+                setTimeout(() => {
+                    lightbox.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+
+            function updateLightboxView() {
+                lbImg.style.opacity = '0.5';
+                lbImg.style.transform = 'scale(0.98)';
+                
+                setTimeout(() => {
+                    lbImg.src = currentImages[currentImageIndex];
+                    lbImg.style.opacity = '1';
+                    lbImg.style.transform = 'scale(1)';
+                }, 150);
+
+                lbCounter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+                
+                if (currentImages.length > 1) {
+                    lbPrev.classList.remove('hidden');
+                    lbNext.classList.remove('hidden');
+                } else {
+                    lbPrev.classList.add('hidden');
+                    lbNext.classList.add('hidden');
+                }
+            }
+
+            // 6. Butonlara Tıklama Olayları
+            lbClose.addEventListener('click', closeLightbox);
+            
+            lbPrev.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentImageIndex = (currentImageIndex > 0) ? currentImageIndex - 1 : currentImages.length - 1;
+                updateLightboxView();
+            });
+            
+            lbNext.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentImageIndex = (currentImageIndex < currentImages.length - 1) ? currentImageIndex + 1 : 0;
+                updateLightboxView();
+            });
+
+            // 7. Kullanıcı Deneyimi Ekstraları
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) closeLightbox();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('hidden')) {
+                    if (e.key === 'Escape') closeLightbox();
+                    if (e.key === 'ArrowLeft' && currentImages.length > 1) lbPrev.click();
+                    if (e.key === 'ArrowRight' && currentImages.length > 1) lbNext.click();
+                }
+            });
+        });
+    </script>
+    </body>
 </html>
