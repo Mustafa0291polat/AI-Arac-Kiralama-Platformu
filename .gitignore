@@ -1,8 +1,16 @@
 # Local environment
 .env
 .env.*
+!.env.example
 sql_app.db
 
 # Python cache
 __pycache__/
 *.pyc
+
+# Sanal ortam
+venv/
+.venv/
+
+# Arşiv dosyaları
+*.zip

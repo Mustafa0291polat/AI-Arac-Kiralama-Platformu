@@ -1,4 +1,5 @@
 # Yapay Zeka Destekli Bireyler Arası Araç Kiralama Platformu
+
 Bu proje, Yazılım Mühendisliği dersi kapsamında geliştirilmektedir.
 
 ## Ekip Üyeleri
@@ -6,50 +7,57 @@ Bu proje, Yazılım Mühendisliği dersi kapsamında geliştirilmektedir.
 - Erkan Özbey
 - Duhan Harbi
 
-## AI Destekli Araç Filtreleme
-Bu proje, kullanıcıların doğal dil ile girdikleri arama kriterlerini OpenAI tabanlı bir servis aracılığıyla yapılandırılmış filtrelere çevirebilir.
+## Ne Yapar?
+Kullanıcılar araçlarını kiraya verebilir, kiralamak isteyenler ise ihtiyacını **kendi cümleleriyle** anlatarak arama yapabilir. Örneğin *"Hafta sonu dağda kamp yapacağız, araziye uygun bir araç lazım"* yazıldığında, OpenAI tabanlı filtre servisi bunu yapılandırılmış kriterlere (SUV, 4x4 vb.) çevirir ve eşleşen ilanları listeler.
 
-### Eklenen Özellikler
-- `backend/ai_filter.py`: Kullanıcının doğal dil girdisini JSON filtreye dönüştürür.
-- `backend/main.py`: Yeni araç ekleme ve yapay zeka destekli filtreleme API rotaları eklenmiştir.
-- `requirements.txt`: Gerekli Python paketleri tanımlandı.
-- `.gitignore`: `.env`, `sql_app.db` ve Python cache dosyaları için ignore kuralları eklendi.
-- `.env.example`: OpenAI anahtarının nasıl yapılandırılacağı gösterildi.
+## Teknolojiler
+- **Backend:** FastAPI + SQLAlchemy + SQLite
+- **Yapay Zeka:** OpenAI (gpt-4o-mini) ile doğal dil → JSON filtre dönüşümü
+- **Frontend:** Statik HTML + Tailwind CSS (backend/static altında)
+- **Testler:** pytest (bellek içi SQLite ile, OpenAI çağrıları mock'lanır)
 
-### Çalıştırma Adımları
-1. Proje kök dizininde bir Python sanal ortamı oluşturun.
+## Kurulum ve Çalıştırma
+
+1. Proje kök dizininde sanal ortam oluşturun ve etkinleştirin:
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate        # Windows
+   source venv/bin/activate     # macOS / Linux
+   ```
 2. Gerekli paketleri yükleyin:
    ```bash
    pip install -r requirements.txt
    ```
-3. `backend` dizinine `.env` dosyası ekleyin ve `OPENAI_API_KEY` anahtarınızı yazın.
-4. Sunucuyu başlatın:
+3. (İsteğe bağlı — akıllı arama için) `backend/.env.example` dosyasını `backend/.env` adıyla kopyalayıp kendi `OPENAI_API_KEY` değerinizi yazın. Anahtar yoksa site yine çalışır; yalnızca doğal dil araması devre dışı kalır ve kullanıcıya anlaşılır bir mesaj gösterilir.
+4. Örnek araç verisini yükleyin (isteğe bağlı):
+   ```bash
+   python -m backend.seed_data
+   ```
+5. Sunucuyu proje kökünden başlatın:
    ```bash
    uvicorn backend.main:app --reload
    ```
+6. Tarayıcıda `http://127.0.0.1:8000` adresini açın.
 
-### Örnek API Kullanımı
-- `POST /register`: Kullanıcı kaydı.
-- `POST /login`: Giriş doğrulaması (şimdilik sahte token döner).
-- `POST /cars/`: Araç ilanı ekleme.
-- `GET /cars/`: Tüm araçları listeleme.
-- `POST /filter/prompt`: Doğal dil promptunu alıp arama filtresi yaratma ve eşleşen araçları döndürme.
+## Sayfalar
+- `/` — Ana sayfa: doğal dil arama, ilan listesi, ilan verme formu
+- `/kayit` — Üye kayıt formu
+- `/giris` — Giriş formu
 
-### Frontend Testi
-- `backend/static/index.html` dosyası, backend API ile konuşmak için hazır bir örnek arayüz sunar.
-- Sunucuyu başlattıktan sonra tarayıcıda `http://127.0.0.1:8000` adresini açarak:
-  - doğal dil filtreleme yapabilir,
-  - araç ekleyebilir,
-  - tüm araçları görebilirsiniz.
+## API Uç Noktaları
+- `POST /api/register/` — Kullanıcı kaydı (yalnızca `@gmail.com`, 18 yaş ve üzeri)
+- `POST /api/login/` — Giriş doğrulaması
+- `GET /cars/` — Kiralık durumdaki araçları listeler
+- `POST /cars/` — Araç ilanı ekler
+- `POST /upload-images/` — İlan fotoğraflarını yükler
+- `POST /filter/prompt` — Doğal dil isteğini yapay zeka ile filtreye çevirip eşleşen araçları döndürür
 
-### Örnek Veri Eklemek
-- Proje kökünden şu komutu çalıştırarak örnek araç verisi ekleyin:
-  ```bash
-  python -m backend.seed_data
-  ```
-- Bu, `sql_app.db` içine kiralık araç verisi ve fotoğraflı örnek ilanları ekler.
-- Var olan veritabanı dosyasını otomatik olarak siler ve yeniden oluşturur, böylece yeni `image_url` ve `available` alanları doğru şekilde kaydedilir.
+## Testler
+Proje kökünden:
+```bash
+python -m pytest backend/test_main.py -v
+```
+Testler kendi bellek içi veritabanını kullanır; gerçek `sql_app.db` dosyasına ve OpenAI'ye dokunmaz.
 
-### Güvenlik Notu
-`.env` dosyanızda gerçek OpenAI anahtarınızı saklayın ve bu dosyayı public repo'ya göndermeyin.
-
+## Güvenlik Notu
+Gerçek OpenAI anahtarınızı yalnızca `backend/.env` dosyasında saklayın. Bu dosya `.gitignore`'dadır ve asla repoya gönderilmemelidir.

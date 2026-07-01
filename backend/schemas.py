@@ -1,8 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr, field_validator
 
-from pydantic import BaseModel, EmailStr, field_validator
-
 class UserCreate(BaseModel):
     first_name: str
     last_name: str
@@ -45,8 +43,6 @@ class UserCreate(BaseModel):
         if v < 18:
             raise ValueError('Kayıt olmak için en az 18 yaşında olmalısınız.')
         return v
-
-# UserLogin, UserOut, CarBase vb. altındaki diğer sınıflar AYNLEN kalsın, onlara dokunma.
 
 class UserLogin(BaseModel):
     email: EmailStr

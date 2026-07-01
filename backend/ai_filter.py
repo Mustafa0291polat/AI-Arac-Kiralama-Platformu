@@ -13,18 +13,18 @@ if API_KEY:
 
 FUEL_TYPES = ["Benzinli", "Benzin & LPG", "Dizel", "Hibrit", "Elektrikli"]
 TRANSMISSION_TYPES = ["Manuel", "Otomatik"]
-BODY_TYPES = ["Cabrio", "Coupe", "Coupe 4 kapı", "Hatchback 3 kapı", "Hatchback 5 kapı", "Sedan", "Station Wagon", "MPV", "Roadster"]
+BODY_TYPES = ["Cabrio", "Coupe", "Coupe 4 kapı", "Hatchback 3 kapı", "Hatchback 5 kapı", "Sedan", "Station Wagon", "SUV", "MPV", "Roadster", "Pick-up"]
 POWER_RANGES = ["50 HP'ye kadar", "51 - 75 HP", "76 - 100 HP", "101 - 125 HP", "126 - 150 HP", "151 - 175 HP", "176 - 200 HP", "201 - 225 HP", "226 - 250 HP", "251 - 275 HP", "276 - 300 HP", "301 - 325 HP", "326 - 350 HP", "351 - 375 HP", "376 - 400 HP", "401 - 425 HP", "426 - 450 HP", "451 - 475 HP", "476 - 500 HP", "501 - 525 HP", "526 - 550 HP", "551 - 575 HP", "576 - 600 HP", "601 HP ve üzeri"]
 ENGINE_SIZES = ["1300 cm3' e kadar", "1301 - 1600 cm3", "1601 - 1800 cm3", "1801 - 2000 cm3", "2001 - 2500 cm3", "2501 - 3000 cm3", "3001 - 3500 cm3", "3501 - 4000 cm3", "4001 - 4500 cm3", "4501 - 5000 cm3", "5001 - 5500 cm3", "5501 - 6000 cm3", "6001 cm3 ve üzeri"]
 DRIVE_TYPES = ["Önden Çekiş", "Arkadan İtiş", "4WD (Sürekli)", "AWD (Elektronik)"]
 COLORS = ["Bej", "Beyaz", "Bordo", "Füme", "Gri", "Gümüş Gri", "Kahverengi", "Kırmızı", "Lacivert", "Mavi", "Mor", "Pembe", "Sarı", "Siyah", "Şampanya", "Turkuaz", "Turuncu", "Yeşil"]
 
 
-OFFROAD_TERMS = [] 
-
 DEFAULT_FILTER = {
     "city": None,
     "district": None,
+    "brand": None,
+    "model": None,
     "price_min": 0,
     "price_max": 10000000,
     "year_min": 1970,
@@ -45,8 +45,6 @@ DEFAULT_FILTER = {
 }
 
 
-# ai_filter.py içindeki SYSTEM_PROMPT kısmını bununla değiştir:
-
 SYSTEM_PROMPT = f"""Sen bir araç kiralama platformu için akıllı filtreleme asistanısın.
 Kullanıcının doğal dilde yazdığı isteği analiz et ve SADECE JSON çıktısı üret. Başka hiçbir açıklama yazma.
 
@@ -61,6 +59,8 @@ Kullanıcı her zaman teknik terimler (SUV, Sedan) kullanmaz. İhtiyacını anla
 Çıktı alanları ve kesin kısıtlamalar:
 - city: String (Örn: "İstanbul" veya null). Belirtilen ili kesinlikle yaz!
 - district: String veya null
+- brand: String veya null (Kullanıcı bir araç markası belirttiyse yaz. Örn: "Renault", "Fiat", "Toyota")
+- model: String veya null (Kullanıcı bir araç modeli belirttiyse yaz. Örn: "Clio", "Egea", "Corolla")
 - price_min: Integer (varsayılan 0)
 - price_max: Integer (varsayılan 10000000)
 - year_min: Integer (varsayılan 1970)
